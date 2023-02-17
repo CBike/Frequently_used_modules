@@ -6,25 +6,16 @@ class ArduinoSerial:
     def __init__(self, port, baudrate=9600):
         self.port = port
         self.baudrate = baudrate
-        self.ser = None
+        self.ser = serial.Serial(port, baudrate, timeout=None)
+        time.sleep(3)
 
-    def __enter__(self):
-        try:
-            self.ser = serial.Serial(self.port, self.baudrate)
-        except serial.SerialException:
-            return f"Error opening port {self.port}"
-
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.ser is not None:
-            self.ser.close()
 
     def send(self, data):
         try:
             print(data)
             data += '\n'
             self.ser.write(data.encode())
+
         except serial.SerialException:
             return f"Error sending data to port {self.port}"
 
@@ -36,10 +27,13 @@ class ArduinoSerial:
         except serial.SerialException:
             return f"Error receiving data from port {self.port}"
 
+    def close(self):
+        self.ser.close()
 
 
-
-with ArduinoSerial('COM15') as arduino:
-    time.sleep(10)
-    arduino.send('RCP,OFF')
-    arduino.receive()
+arduino = ArduinoSerial('COM15')
+arduino.send('RCP,OFF')
+time.sleep(1.5)
+arduino.send('FCP,OFF')
+time.sleep(1.5)
+arduino.close()
