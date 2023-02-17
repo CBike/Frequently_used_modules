@@ -15,7 +15,7 @@ class ArduinoSerial:
             print(data)
             data += '\n'
             self.ser.write(data.encode())
-
+            time.sleep(1.5)
         except serial.SerialException:
             return f"Error sending data to port {self.port}"
 
@@ -33,7 +33,6 @@ class ArduinoSerial:
 
 arduino = ArduinoSerial('COM15')
 arduino.send('RCP,OFF')
-time.sleep(1.5)
 arduino.send('FCP,OFF')
-time.sleep(1.5)
+
 arduino.close()
